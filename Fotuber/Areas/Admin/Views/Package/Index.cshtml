@@ -1,0 +1,142 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+<h2>Paket İşlemleri</h2>
+<br />
+
+<button type="button" id="btngetlist" class="btn btn-outline-info">Şehir Listesi</button>
+<button type="button" id="btngetbyid" class="btn btn-outline-primary">Şehir Getir</button>
+<button type="button" id="btnaddpackage" class="btn btn-outline-warning">Şehir Ekle</button>
+<button type="button" id="btndeletepackage" class="btn btn-outline-danger">Şehir Sil</button>
+<button type="button" id="btnupdatepackage" class="btn btn-outline-success">Şehir Güncelle</button>
+
+<br />
+<br />
+
+<div id="packagelist">
+    Buraya Paket Listesi Gelecek
+</div>
+<br />
+<div>
+     <input type="text" id="txtserviceid" placeholder="Paket ID değerini giriniz" class="form-control" />
+</div>
+<br />
+<div>
+    <input type="text" id="txtname" placeholder="Silinecek ID değerini giriniz" class="form-control" />
+</div>
+<br />
+<div>
+    <input type="text" id="txtpackageeditid" placeholder="güncellenecek ID değerini giriniz" class="form-control" />
+    <input type="text" id="txtpackagename" placeholder="güncellenecek paket değerini giriniz" class="form-control" />
+    <input type="text" id="txtcitdaynightname" placeholder="güncellenecek paket bilgisini giriniz" class="form-control" />
+</div>
+<br />
+<div id="destinationlistbyid">
+    
+</div>
+
+<br />
+<div>
+    <input type="text" id="txtname" placeholder="Paket adını giriniz" class="form-control" />
+    <br />
+    <input type="text" id="txtdescription" placeholder="Açıklama" class="form-control" />
+    <br />
+    <input type="text" id="txtprice" placeholder="Fiyat" class="form-control" />
+    <br />
+    <input type="text" id="txtcapapackage" placeholder="Kişi sayısı" class="form-control" />
+</div>
+
+<script>
+    $("#btngetlist").click(function () {
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "Get",
+            url: "/Admin/Package/PackageList/",
+            success: function (func) {
+                let w = jQuery.parseJSON(func);
+                console.log(w);
+                let tablehtml = "<table class=table table-bordered> <tr><th> Paket Adı </th> <th> İçerik </th> <th> Fiyatı </th> </tr>";
+                $.each(w, (index, value) => {
+                    tablehtml += `<tr><td>${value.Package</td> <td>${value.Description}</td> <td> ${value.Price} ₺ </td> </tr>`
+                });
+                tablehtml += "</table>";
+                $("#packagelist").html(tablehtml);
+            }
+        });
+    });
+
+        $("#btnaddpackage").click(function () {
+            let packagevalues = {
+            Name: $("#txtname").val(),
+            Description: $("#txtdescription").val(),
+            Price: $("#txtprice").val(),
+            Capacity: $("#txtcapacity").val()
+        };
+
+        $.ajax({
+            type: "post",
+                    url: "/Admin/Package/AddPackageService/",
+                data: packagevalues,
+            success: function (func) {
+                let result = jQuery.parseJSON(func);
+                alert("Paket - Başarılı Bir Şekilde Eklendi");
+            }
+        });
+    });
+
+    $("#btngetbyid").click(x => {
+        let id = $("#txtid").val();
+
+        $.ajax({
+            contentType: "application/json",
+            dataType: "json",
+            type: "Get",
+            url: "/Admin/Package/GetById/",
+            data: { DestinationID: id },
+            success: function (fun2) {
+                let result = jQuery.parseJSON(fun2);
+                console.log(result);
+                let htmlstr = `<table class=table table-bordered><tr><th>Şehir Adı</th><th>Gün-Gece</th><th>Fiyatı</th></tr><tr><td>${result.Name}</td><td>${result.Description}</td><td>${result.Capacity}</td></tr></table>`;
+                $("#destinationlistbyid").html(htmlstr);
+            }
+        });
+    });
+
+    $("#btndeletepackage").click(x => {
+        let id = $("#txtpackageid").val();
+        $.ajax({
+            url: "/Admin/Package/DeletePackage/" + id,
+            type: "post",
+            contentType: "application/json",
+            dataType: "json",
+            success: function (fun3) {
+                alert("Paket silindi");
+            }
+        });
+    });
+
+    $("#btnupdatepackage").click(function () {
+        let values = {
+            ServiceID: $("#txpackageeditid").val(),
+            Nackage: $("#txtpackagename").val(),
+            Description: $("#txtdescriptionname").val()
+        };
+
+        $.ajax({
+            type: "post",
+            url: "/Admin/Package/UpdatePackage/",
+            data: values,
+            success: function (fun4) {
+                alert("Güncelleme işlemi yapıldı");
+            }
+        });
+    });
+
+</script>
+
